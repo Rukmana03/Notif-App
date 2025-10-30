@@ -1,0 +1,27 @@
+# File Kunci Rahasia Backend (SANGAT PENTING)
+/server/tes-notif-firebase-firebase-adminsdk-fbsvc-bf91d0bddd.json
+
+# File Environment Backend
+/server/.env
+
+# Folder Modul Node (Besar dan tidak perlu)
+/server/node_modules
+
+
+# File Environment Frontend
+# (Ganti /client/ jika nama folder Anda beda, misal /frontend)
+/client/.env*
+
+# Folder Modul Node Frontend
+/client/node_modules
+/client/dist
+
+# Jika frontend ada di root (ulangi untuk keamanan)
+/node_modules
+/dist
+.env
+.env*
+
+# Log dan file sistem
+npm-debug.log*
+.DS_Store
