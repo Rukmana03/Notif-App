@@ -1,0 +1,150 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../node_modules/.prisma/client"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String   
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  statuses Status[]
+
+  contacts Contact[] @relation("UserContacts")
+  contactOf Contact[] @relation("ContactOf")
+
+  likes StatusLike[]
+  views StatusView[]
+
+  privacySettings StatusPrivacySetting[]
+  fcmTokens FCMToken[]
+  canViewSpecificStatuses Status[] @relation("StatusSpecificViewers")
+
+  notifications          Notification[] @relation("UserNotifications")
+  triggeredNotifications Notification[] @relation("ActorNotifications")
+}
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  type      String   
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user      User     @relation("UserNotifications", fields: [userId], references: [id])
+  userId    Int      @map("user_id")
+
+  actor     User     @relation("ActorNotifications", fields: [actorId], references: [id])
+  actorId   Int      @map("actor_id")
+
+  status    Status?  @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId  Int?     @map("status_id")
+
+  @@index([userId])
+  @@index([actorId])
+  @@index([statusId])
+}
+
+model Status {
+  id          Int       @id @default(autoincrement())
+  content_url String
+  visibility  String    @default("public") 
+  expires_at  DateTime? 
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+
+  owner   User @relation(fields: [ownerId], references: [id])
+  ownerId Int  @map("user_id") 
+
+  likes StatusLike[]
+  notifications Notification[]
+  views StatusView[]
+
+  privacySettings StatusPrivacySetting[]
+  specificViewers User[] @relation("StatusSpecificViewers")
+
+  @@index([ownerId])
+}
+
+model Contact {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User @relation(name: "UserContacts", fields: [userId], references: [id])
+  userId Int  @map("user_id") 
+
+  contact   User @relation(name: "ContactOf", fields: [contactUserId], references: [id])
+  contactUserId Int @map("contact_user_id") 
+
+  @@unique([userId, contactUserId])
+  @@index([userId])
+  @@index([contactUserId])
+}
+
+model StatusLike {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
+
+  status   Status @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId Int    @map("status_id")
+
+  @@unique([userId, statusId])
+  @@index([userId])
+  @@index([statusId])
+}
+
+model StatusView {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
+
+  status   Status @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId Int    @map("status_id")
+
+  @@unique([userId, statusId])
+  @@index([userId])
+  @@index([statusId])
+}
+
+model StatusPrivacySetting {
+  id        Int      @id @default(autoincrement())
+  type      String   
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user   User @relation(fields: [userId], references: [id])
+  userId Int  @map("user_id")
+
+  status   Status @relation(fields: [statusId], references: [id], onDelete: Cascade)
+  statusId Int    @map("status_id")
+
+  @@index([userId])
+  @@index([statusId])
+}
+
+model FCMToken {
+  id        Int      @id @default(autoincrement())
+  token     String   @unique
+
+  createdAt DateTime @default(now()) @map("created_at")
+  user   User @relation(fields: [userId], references: [id])
+
+  userId Int
+
+  @@index([userId])
+}
