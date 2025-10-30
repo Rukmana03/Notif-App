@@ -6,12 +6,12 @@ import apiClient from "./api/axiosConfig";
 const API_URL = "http://localhost:3000";
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB2LeELgZVBhdaxzLdl22joqGmXws0OaEQ",
-  authDomain: "tes-notif-firebase.firebaseapp.com",
-  projectId: "tes-notif-firebase",
-  storageBucket: "tes-notif-firebase.firebasestorage.app",
-  messagingSenderId: "1053878873649",
-  appId: "1:1053878873649:web:15f26903f4a2604a2def10",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
 const app = initializeApp(firebaseConfig);
